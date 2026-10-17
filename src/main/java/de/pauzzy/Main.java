@@ -1,4 +1,4 @@
-package org.example;
+package de.pauzzy;
 
 public class Main {
     static void main() {
