@@ -1,11 +1,17 @@
 package de.pauzzy;
 
+import java.util.Random;
+
 public class PMath {
     public static class VectorD {
-        private final double[] data;
+        private double[] data;
 
         public VectorD(int size) {
             data = new double[size];
+        }
+
+        public void set(VectorD other) {
+            data = other.get();
         }
 
         public void set(int index, double value) {
@@ -14,6 +20,10 @@ public class PMath {
 
         public double get(int index) {
             return data[index];
+        }
+
+        public double[] get() {
+            return data.clone();
         }
 
         public int getDimension() {
@@ -112,10 +122,18 @@ public class PMath {
 
             return result;
         }
+
+        public void print(String label) {
+            System.out.print(label + "{vec}: [ ");
+            for (double el : data) {
+                System.out.print(el + " ");
+            }
+            System.out.println("]");
+        }
     }
 
     public static class MatrixD {
-        private final double[] data;
+        private double[] data;
         private final int rows;
         private final int cols;
 
@@ -129,8 +147,16 @@ public class PMath {
             data[row*cols + col] = value;
         }
 
+        public void setData(double[] values) {
+            data = values;
+        }
+
         public double get(int row, int col) {
             return data[row*cols + col];
+        }
+
+        public double[] get() {
+            return data.clone();
         }
 
         public int getCols() {
@@ -140,23 +166,30 @@ public class PMath {
         public int getRows() {
             return rows;
         }
+    }
 
-        public static VectorD mulMV(MatrixD matrix, VectorD vector) {
-            if (matrix.getCols() != vector.getDimension()) {
-                throw  new IllegalArgumentException("Matrix cols and Vector dimension don't match");
-            }
-
-            VectorD result = new VectorD(matrix.getRows());
-
-            for (int i = 0; i < matrix.getRows(); i++) {
-                double sum = 0;
-                for (int j = 0; j < matrix.getCols(); j++) {
-                    sum += matrix.get(i, j) * vector.get(j);
-                }
-                result.set(i, sum);
-            }
-
-            return result;
+    public static VectorD mulMV(MatrixD matrix, VectorD vector) {
+        if (matrix.getCols() != vector.getDimension()) {
+            throw  new IllegalArgumentException("Matrix cols and Vector dimension don't match");
         }
+
+        VectorD result = new VectorD(matrix.getRows());
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+            double sum = 0;
+            for (int j = 0; j < matrix.getCols(); j++) {
+                sum += matrix.get(i, j) * vector.get(j);
+            }
+            result.set(i, sum);
+        }
+
+        return result;
+    }
+
+    public static MatrixD randMatrix(int rows, int cols, double lowerBound, double upperBound) {
+        MatrixD result = new MatrixD(rows, cols);
+        Random random = new Random();
+        result.setData(random.doubles((long)rows * cols).toArray());
+        return result;
     }
 }

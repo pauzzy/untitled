@@ -9,9 +9,29 @@ public class NeuralNet {
         this.layers = layers;
     }
 
-    void forward(PMath.VectorD input) {
-        for (int i = 0; i < layers.size(); i++) {
+    ArrayList<Layer> getLayers() {
+        return layers;
+    }
 
+    void forward(PMath.VectorD input) {
+        layers.getFirst().setNodes(input);
+
+        for (int i = 0; i < layers.size() - 1; i++) {
+            Layer currentLayer = layers.get(i);
+
+            PMath.VectorD currentLayerNodes =
+                currentLayer.getNodes();
+
+            PMath.MatrixD currentLayerWeights =
+                currentLayer.getWeights();
+
+            Layer nextLayer = layers.get(i + 1);
+            PMath.VectorD nextLayerNodes = PMath.mulMV(
+                currentLayerWeights, currentLayerNodes
+            );
+            nextLayerNodes.add(nextLayer.getBiases());
+
+            nextLayer.setNodes(nextLayerNodes);
         }
     }
 }
